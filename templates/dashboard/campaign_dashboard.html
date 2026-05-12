@@ -52,10 +52,6 @@
             box-shadow: 0 4px 14px rgba(0,0,0,0.08);
         }
 
-        .welcome-box h1 {
-            margin-top: 0;
-        }
-
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -84,8 +80,6 @@
         .stat-card .text-value {
             font-size: 18px;
             font-weight: bold;
-            line-height: 1.4;
-            word-break: break-word;
         }
 
         .panel {
@@ -99,6 +93,24 @@
         .panel h3 {
             margin-top: 0;
             color: #f4a261;
+        }
+
+        .chart-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+        }
+
+        .chart-box {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            padding: 20px;
+            border-radius: 14px;
+        }
+
+        .chart-box h4 {
+            margin-top: 0;
+            color: #374151;
         }
 
         .table-wrapper {
@@ -209,6 +221,7 @@
                 {{ request.user.email }}
             {% endif %}
         </h1>
+
         <p><strong>Role:</strong> {{ request.user.role }}</p>
     </div>
 
@@ -252,19 +265,36 @@
         </div>
 
         <div class="stat-card">
-            <h3>Worst Campaign</h3>
-            <div class="text-value">
-                {% if worst_campaign %}
-                    {{ worst_campaign.campaign.title }}
-                {% else %}
-                    -
-                {% endif %}
-            </div>
+            <h3>Rejected</h3>
+            <div class="number">{{ rejected_count }}</div>
         </div>
 
         <div class="stat-card">
             <h3>Top Sales Rep</h3>
             <div class="text-value">{{ overall_top_sales_rep }}</div>
+        </div>
+    </div>
+
+    <div class="panel">
+        <h3>Campaign Analytics Dashboard</h3>
+
+        <div class="chart-grid">
+
+            <div class="chart-box">
+                <h4>Campaign Visits vs Conversions</h4>
+                <canvas id="campaignPerformanceChart"></canvas>
+            </div>
+
+            <div class="chart-box">
+                <h4>Approval Status Overview</h4>
+                <canvas id="approvalStatusChart"></canvas>
+            </div>
+
+            <div class="chart-box">
+                <h4>Conversion Rate by Campaign (%)</h4>
+                <canvas id="conversionRateChart"></canvas>
+            </div>
+
         </div>
     </div>
 
@@ -278,80 +308,129 @@
                     <tr>
                         <th>Campaign</th>
                         <th>Status</th>
-                        <th>Review Notes</th>
-                        <th>Last Updated</th>
                         <th>Visits</th>
+                        <th>Interested</th>
+                        <th>Follow Ups</th>
                         <th>Converted</th>
+                        <th>Conversion Rate</th>
                         <th>ROI %</th>
-                        <th>Approved By</th>
-                        <th>Actions</th>
+                        <th>Top Sales Rep</th>
                     </tr>
                 </thead>
 
                 <tbody>
                     {% for item in campaign_data %}
                     <tr>
-                        <td>
-                            {% if item.campaign.title %}
-                                {{ item.campaign.title }}
-                            {% else %}
-                                <span class="muted-text">No campaign title</span>
-                            {% endif %}
-                        </td>
+
+                        <td>{{ item.campaign.title }}</td>
 
                         <td>
-                            <span class="badge status-{{ item.campaign.approval_status|default:'pending' }}">
-                                {{ item.campaign.approval_status|default:"pending" }}
+                            <span class="badge status-{{ item.campaign.approval_status }}">
+                                {{ item.campaign.approval_status }}
                             </span>
                         </td>
 
-                        <td class="notes-cell">
-                            {% if item.campaign.review_notes %}
-                                {{ item.campaign.review_notes }}
-                            {% else %}
-                                <span class="muted-text">No review notes</span>
-                            {% endif %}
-                        </td>
+                        <td>{{ item.total_visits }}</td>
+                        <td>{{ item.interested }}</td>
+                        <td>{{ item.follow_ups }}</td>
+                        <td>{{ item.converted }}</td>
+                        <td>{{ item.conversion_rate }}%</td>
+                        <td>{{ item.roi_percent }}%</td>
+                        <td>{{ item.top_sales_rep }}</td>
 
-                        <td>
-                            {% if item.campaign.updated_at %}
-                                {{ item.campaign.updated_at|date:"d M Y, H:i" }}
-                            {% else %}
-                                <span class="muted-text">No update date</span>
-                            {% endif %}
-                        </td>
-
-                        <td>{{ item.total_visits|default:0 }}</td>
-                        <td>{{ item.converted|default:0 }}</td>
-                        <td>{{ item.roi_percent|default:0 }}%</td>
-
-                        <td>
-                            {% if item.campaign.approved_by %}
-                                {{ item.campaign.approved_by.first_name|default:item.campaign.approved_by.email }}
-                            {% else %}
-                                <span class="muted-text">-</span>
-                            {% endif %}
-                        </td>
-
-                        <td>
-                            {% if item.campaign.approval_status == 'pending' %}
-                                <a href="{% url 'approve_campaign' item.campaign.id %}" class="btn-approve" onclick="return confirm('Are you sure you want to approve this campaign?')">Approve</a>
-                                <a href="{% url 'reject_campaign' item.campaign.id %}" class="btn-reject" onclick="return confirm('Are you sure you want to reject this campaign?')">Reject</a>
-                            {% else %}
-                                <span class="muted-text">No actions</span>
-                            {% endif %}
-                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
+
         {% else %}
-            <p class="empty-text">No data available</p>
+            <p class="empty-text">No campaign data available</p>
         {% endif %}
     </div>
 
 </div>
+
+{{ chart_labels|json_script:"chart-labels" }}
+{{ chart_visits|json_script:"chart-visits" }}
+{{ chart_conversions|json_script:"chart-conversions" }}
+{{ chart_conversion_rates|json_script:"chart-conversion-rates" }}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    const campaignLabels = JSON.parse(document.getElementById('chart-labels').textContent);
+    const campaignVisits = JSON.parse(document.getElementById('chart-visits').textContent);
+    const campaignConversions = JSON.parse(document.getElementById('chart-conversions').textContent);
+    const campaignConversionRates = JSON.parse(document.getElementById('chart-conversion-rates').textContent);
+
+    new Chart(document.getElementById('campaignPerformanceChart'), {
+        type: 'bar',
+        data: {
+            labels: campaignLabels,
+            datasets: [
+                {
+                    label: 'Visits',
+                    data: campaignVisits,
+                    borderWidth: 1
+                },
+                {
+                    label: 'Conversions',
+                    data: campaignConversions,
+                    borderWidth: 1
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    new Chart(document.getElementById('approvalStatusChart'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Approved', 'Pending', 'Rejected'],
+            datasets: [{
+                data: [
+                    {{ approved_count }},
+                    {{ pending_count }},
+                    {{ rejected_count }}
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true
+        }
+    });
+
+    new Chart(document.getElementById('conversionRateChart'), {
+        type: 'line',
+        data: {
+            labels: campaignLabels,
+            datasets: [{
+                label: 'Conversion Rate %',
+                data: campaignConversionRates,
+                borderWidth: 2,
+                tension: 0.3
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100
+                }
+            }
+        }
+    });
+</script>
 
 </body>
 </html>

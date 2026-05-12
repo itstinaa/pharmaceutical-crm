@@ -14,6 +14,7 @@ from accounts.models import CustomUser
 from .forms import VisitForm
 from .models import Campaign, Market, Sales, Client, Visit, AuditLog
 from .utils import create_audit_log
+from collections import Counter 
 
 
 # ----------------------------------------
@@ -269,10 +270,18 @@ def campaign_dashboard(request):
     campaign_data = []
     total_campaign_visits = 0
     total_converted = 0
+
     approved_count = campaigns.filter(approval_status='approved').count()
     pending_count = campaigns.filter(approval_status='pending').count()
+    rejected_count = campaigns.filter(approval_status='rejected').count()
 
     sales_rep_counter = Counter()
+
+    chart_labels = []
+    chart_visits = []
+    chart_conversions = []
+    chart_conversion_rates = []
+    chart_follow_up_rates = []
 
     for campaign in campaigns:
         visits = Visit.objects.filter(campaign=campaign).select_related('sales_user')
@@ -342,6 +351,12 @@ def campaign_dashboard(request):
             'top_sales_rep': top_sales_rep,
         })
 
+        chart_labels.append(campaign.title)
+        chart_visits.append(total_visits)
+        chart_conversions.append(converted)
+        chart_conversion_rates.append(round(conversion_rate, 2))
+        chart_follow_up_rates.append(round(follow_up_rate, 2))
+
         total_campaign_visits += total_visits
         total_converted += converted
 
@@ -363,11 +378,20 @@ def campaign_dashboard(request):
         'total_converted': total_converted,
         'approved_count': approved_count,
         'pending_count': pending_count,
+        'rejected_count': rejected_count,
         'best_campaign': best_campaign,
         'worst_campaign': worst_campaign,
         'overall_top_sales_rep': overall_top_sales_rep,
         'low_performance_campaigns': low_performance_campaigns,
+
+        # Chart data
+        'chart_labels': chart_labels,
+        'chart_visits': chart_visits,
+        'chart_conversions': chart_conversions,
+        'chart_conversion_rates': chart_conversion_rates,
+        'chart_follow_up_rates': chart_follow_up_rates,
     }
+
     return render(request, 'dashboard/campaign_dashboard.html', context)
 
 
