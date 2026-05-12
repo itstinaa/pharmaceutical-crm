@@ -701,7 +701,10 @@
     const cancelledVisits = Number("{{ cancelled_visits|default:0 }}");
     const followUpStatusVisits = Number("{{ follow_up_status_visits|default:0 }}");
 
-    // VISIT OUTCOMES CHART
+    // ================================
+    // VISIT OUTCOME CHART
+    // ================================
+
     new Chart(document.getElementById('visitOutcomeChart'), {
         type: 'bar',
 
@@ -723,13 +726,39 @@
                     notInterestedVisits
                 ],
 
-                borderWidth: 1
+                backgroundColor: [
+                    '#3b82f6', // Blue
+                    '#10b981', // Green
+                    '#f59e0b', // Orange
+                    '#ef4444'  // Red
+                ],
+
+                borderColor: [
+                    '#2563eb',
+                    '#059669',
+                    '#d97706',
+                    '#dc2626'
+                ],
+
+                borderWidth: 2,
+                borderRadius: 8
             }]
         },
 
         options: {
             responsive: true,
             maintainAspectRatio: false,
+
+            plugins: {
+                legend: {
+                    labels: {
+                        font: {
+                            size: 14,
+                            weight: 'bold'
+                        }
+                    }
+                }
+            },
 
             scales: {
                 y: {
@@ -738,15 +767,28 @@
                     ticks: {
                         precision: 0,
                         stepSize: 1
+                    },
+
+                    grid: {
+                        color: '#e5e7eb'
+                    }
+                },
+
+                x: {
+                    grid: {
+                        display: false
                     }
                 }
             }
         }
     });
 
+    // ================================
     // VISIT STATUS CHART
+    // ================================
+
     new Chart(document.getElementById('visitStatusChart'), {
-        type: 'bar',
+        type: 'doughnut',
 
         data: {
             labels: [
@@ -766,7 +808,16 @@
                     followUpStatusVisits
                 ],
 
-                borderWidth: 1
+                backgroundColor: [
+                    '#6366f1', // Indigo
+                    '#10b981', // Green
+                    '#ef4444', // Red
+                    '#f59e0b'  // Orange
+                ],
+
+                borderColor: '#ffffff',
+                borderWidth: 3,
+                hoverOffset: 10
             }]
         },
 
@@ -774,13 +825,16 @@
             responsive: true,
             maintainAspectRatio: false,
 
-            scales: {
-                y: {
-                    beginAtZero: true,
+            plugins: {
+                legend: {
+                    position: 'bottom',
 
-                    ticks: {
-                        precision: 0,
-                        stepSize: 1
+                    labels: {
+                        padding: 20,
+                        font: {
+                            size: 13,
+                            weight: 'bold'
+                        }
                     }
                 }
             }
