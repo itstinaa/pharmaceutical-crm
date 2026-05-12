@@ -132,6 +132,30 @@ def sales_dashboard(request):
     ).order_by('next_follow_up_date')[:5]
 
     converted_visits = all_visits.filter(outcome='converted').count()
+    
+    # -------------------------------
+    # Chart Analytics
+    # -------------------------------
+
+    interested_visits = all_visits.filter(outcome='interested').count()
+
+    follow_up_needed_visits = all_visits.filter(
+        outcome='follow_up_needed'
+    ).count()
+
+    not_interested_visits = all_visits.filter(
+        outcome='not_interested'
+    ).count()
+
+    planned_visits = all_visits.filter(status='planned').count()
+
+    completed_visits = all_visits.filter(status='completed').count()
+
+    cancelled_visits = all_visits.filter(status='cancelled').count()
+
+    follow_up_status_visits = all_visits.filter(
+        status='follow_up'
+    ).count()
 
     context = {
         'total_visits': all_visits.count(),
@@ -142,7 +166,21 @@ def sales_dashboard(request):
         'recent_visits': recent_visits,
         'upcoming_followups': upcoming_followups,
 
+        # -------------------------------
+        # Chart Analytics
+        # -------------------------------
+        'interested_visits': interested_visits,
+        'follow_up_needed_visits': follow_up_needed_visits,
+        'not_interested_visits': not_interested_visits,
+
+        'planned_visits': planned_visits,
+        'completed_visits': completed_visits,
+        'cancelled_visits': cancelled_visits,
+        'follow_up_status_visits': follow_up_status_visits,
+
+        # -------------------------------
         # Search/filter/pagination
+        # -------------------------------
         'visits': page_obj,
         'page_obj': page_obj,
         'q': q,

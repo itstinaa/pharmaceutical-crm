@@ -374,6 +374,15 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        .chart-box {
+            height: 350px;
+        }
+
+        .chart-box canvas {
+            max-height: 260px;
+        }
+        
     </style>
 </head>
 
@@ -682,48 +691,99 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
+    const interestedVisits = Number("{{ interested_visits|default:0 }}");
+    const convertedVisits = Number("{{ converted_visits|default:0 }}");
+    const followUpNeededVisits = Number("{{ follow_up_needed_visits|default:0 }}");
+    const notInterestedVisits = Number("{{ not_interested_visits|default:0 }}");
+
+    const plannedVisits = Number("{{ planned_visits|default:0 }}");
+    const completedVisits = Number("{{ completed_visits|default:0 }}");
+    const cancelledVisits = Number("{{ cancelled_visits|default:0 }}");
+    const followUpStatusVisits = Number("{{ follow_up_status_visits|default:0 }}");
+
+    // VISIT OUTCOMES CHART
     new Chart(document.getElementById('visitOutcomeChart'), {
         type: 'bar',
+
         data: {
-            labels: ['Interested', 'Converted', 'Follow-Up Needed', 'Not Interested'],
+            labels: [
+                'Interested',
+                'Converted',
+                'Follow-Up Needed',
+                'Not Interested'
+            ],
+
             datasets: [{
                 label: 'Visit Outcomes',
+
                 data: [
-                    {{ interested_visits|default:0 }},
-                    {{ converted_visits|default:0 }},
-                    {{ follow_up_needed_visits|default:0 }},
-                    {{ not_interested_visits|default:0 }}
+                    interestedVisits,
+                    convertedVisits,
+                    followUpNeededVisits,
+                    notInterestedVisits
                 ],
+
                 borderWidth: 1
             }]
         },
+
         options: {
             responsive: true,
+            maintainAspectRatio: false,
+
             scales: {
                 y: {
-                    beginAtZero: true
+                    beginAtZero: true,
+
+                    ticks: {
+                        precision: 0,
+                        stepSize: 1
+                    }
                 }
             }
         }
     });
 
+    // VISIT STATUS CHART
     new Chart(document.getElementById('visitStatusChart'), {
-        type: 'doughnut',
+        type: 'bar',
+
         data: {
-            labels: ['Planned', 'Completed', 'Cancelled', 'Follow Up'],
+            labels: [
+                'Planned',
+                'Completed',
+                'Cancelled',
+                'Follow Up'
+            ],
+
             datasets: [{
                 label: 'Visit Status',
+
                 data: [
-                    {{ planned_visits|default:0 }},
-                    {{ completed_visits|default:0 }},
-                    {{ cancelled_visits|default:0 }},
-                    {{ follow_up_status_visits|default:0 }}
+                    plannedVisits,
+                    completedVisits,
+                    cancelledVisits,
+                    followUpStatusVisits
                 ],
+
                 borderWidth: 1
             }]
         },
+
         options: {
-            responsive: true
+            responsive: true,
+            maintainAspectRatio: false,
+
+            scales: {
+                y: {
+                    beginAtZero: true,
+
+                    ticks: {
+                        precision: 0,
+                        stepSize: 1
+                    }
+                }
+            }
         }
     });
 </script>
