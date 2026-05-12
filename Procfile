@@ -1,0 +1,1 @@
+web: gunicorn pharmaceutical_crm.wsgi:application

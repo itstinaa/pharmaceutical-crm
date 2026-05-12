@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pharmaceutical Ltd Login</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #eaf4fb, #dcecf7);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 24px;
+        }
+
+        .login-wrapper {
+            width: 100%;
+            max-width: 1080px;
+        }
+
+        .login-card {
+            display: grid;
+            grid-template-columns: 1fr 0.9fr;
+            background: #ffffff;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 18px 40px rgba(15, 76, 129, 0.15);
+            min-height: 640px;
+        }
+
+        .left-panel {
+            position: relative;
+            background: linear-gradient(180deg, #0f4c81, #0b3d68);
+            color: white;
+            padding: 42px 36px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .left-panel::before {
+            content: "";
+            position: absolute;
+            top: -30px;
+            right: -30px;
+            width: 120px;
+            height: 120px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 50%;
+        }
+
+        .left-panel::after {
+            content: "";
+            position: absolute;
+            bottom: -35px;
+            left: -35px;
+            width: 120px;
+            height: 120px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 50%;
+        }
+
+        .brand-icon {
+            width: 46px;
+            height: 46px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.14);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            margin-bottom: 18px;
+        }
+
+        .brand-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin: 0 0 10px;
+        }
+
+        .brand-text {
+            font-size: 14px;
+            line-height: 1.7;
+            color: rgba(255, 255, 255, 0.88);
+            max-width: 360px;
+            margin-bottom: 28px;
+        }
+
+        .feature-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-top: 8px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 14px 16px;
+            border-radius: 14px;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.95);
+        }
+
+        .feature-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.14);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            flex-shrink: 0;
+        }
+
+        .left-footer {
+            margin-top: 32px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.75);
+        }
+
+        .right-panel {
+            background: #f7f9fb;
+            padding: 48px 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .form-container {
+            width: 100%;
+            max-width: 390px;
+        }
+
+        .form-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1f2937;
+            margin: 0 0 8px;
+        }
+
+        .form-subtitle {
+            margin: 0 0 24px;
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .error {
+            background: #ffe5e5;
+            color: #a30000;
+            padding: 12px 14px;
+            border-radius: 10px;
+            margin-bottom: 18px;
+            font-size: 14px;
+        }
+
+        .field-group {
+            margin-bottom: 18px;
+        }
+
+        .field-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+
+        .input,
+        .select {
+            width: 100%;
+            height: 48px;
+            border: 1px solid #d7dee7;
+            border-radius: 12px;
+            padding: 0 14px;
+            font-size: 14px;
+            background: #fff;
+            outline: none;
+            transition: 0.2s ease;
+        }
+
+        .input:focus,
+        .select:focus {
+            border-color: #0f4c81;
+            box-shadow: 0 0 0 3px rgba(15, 76, 129, 0.12);
+        }
+
+        .password-wrap {
+            position: relative;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: none;
+            background: #eef4f9;
+            color: #0f4c81;
+            padding: 6px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .extra-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 6px 0 18px;
+            font-size: 13px;
+        }
+
+        .remember {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #4b5563;
+        }
+
+        .remember input {
+            width: auto;
+            margin: 0;
+        }
+
+        .extra-row a,
+        .help-text a {
+            color: #0f4c81;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .extra-row a:hover,
+        .help-text a:hover {
+            text-decoration: underline;
+        }
+
+        .sign-in-btn {
+            width: 100%;
+            height: 50px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(90deg, #0f4c81, #1787a5);
+            color: white;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+        .sign-in-btn:hover {
+            opacity: 0.95;
+        }
+
+        .notice-box {
+            margin-top: 18px;
+            background: #edf2f7;
+            border: 1px solid #dde5ee;
+            color: #6b7280;
+            border-radius: 12px;
+            padding: 14px;
+            font-size: 12px;
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        .help-text {
+            margin-top: 18px;
+            text-align: center;
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        @media (max-width: 900px) {
+            .login-card {
+                grid-template-columns: 1fr;
+            }
+
+            .left-panel {
+                min-height: auto;
+            }
+
+            .right-panel {
+                padding: 36px 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-wrapper">
+        <div class="login-card">
+            <div class="left-panel">
+                <div>
+                    <div class="brand-icon">💊</div>
+                    <h1 class="brand-title">Pharmaceutical Ltd</h1>
+                    <p class="brand-text">
+                        Secure access to your sales, campaign, client, and reporting dashboard.
+                        Built for streamlined pharmaceutical operations and team productivity.
+                    </p>
+
+                    <div class="feature-list">
+                        <div class="feature-item">
+                            <div class="feature-icon">📊</div>
+                            <span>Sales activity and performance monitoring</span>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">📣</div>
+                            <span>Marketing campaign coordination and tracking</span>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">👨‍⚕️</div>
+                            <span>Healthcare professional and client interaction records</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="left-footer">
+                    © 2025 Pharmaceutical Ltd. Internal dashboard system.
+                </div>
+            </div>
+
+            <div class="right-panel">
+                <div class="form-container">
+                    <h2 class="form-title">Welcome back</h2>
+                    <p class="form-subtitle">Sign in to continue to your role-based dashboard.</p>
+
+                    {% if error %}
+                        <div class="error">{{ error }}</div>
+                    {% endif %}
+
+                    <form method="POST">
+                        {% csrf_token %}
+
+                        <div class="field-group">
+                            <label for="email">Email Address</label>
+                            <input
+                                class="input"
+                                type="email"
+                                name="email"
+                                id="email"
+                                value="{{ request.POST.email|default:'' }}"
+                                placeholder="name@pharmaceuticalltd.com"
+                                required
+                            >
+                        </div>
+
+                        <div class="field-group">
+                            <label for="password">Password</label>
+                            <div class="password-wrap">
+                                <input
+                                    class="input"
+                                    type="password"
+                                    name="password"
+                                    id="password"
+                                    placeholder="Enter your password"
+                                    required
+                                >
+                                <button type="button" class="toggle-password" onclick="togglePassword()">Show</button>
+                            </div>
+                        </div>
+
+                        <div class="extra-row">
+                            <label class="remember">
+                                <input type="checkbox">
+                                Remember me
+                            </label>
+                            <a href="#">Forgot password?</a>
+                        </div>
+
+                        <button type="submit" class="sign-in-btn">Sign In</button>
+                    </form>
+
+                    <div class="notice-box">
+                        Access is controlled by role permissions. Each user sees dashboard
+                        features relevant to their responsibilities.
+                    </div>
+
+                    <div class="help-text">
+                        Need help? <a href="#">Contact your system administrator.</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function togglePassword() {
+            const passwordInput = document.getElementById("password");
+            const button = document.querySelector(".toggle-password");
+
+            if (passwordInput.type === "password") {
+                passwordInput.type = "text";
+                button.textContent = "Hide";
+            } else {
+                passwordInput.type = "password";
+                button.textContent = "Show";
+            }
+        }
+    </script>
+</body>
+</html>
